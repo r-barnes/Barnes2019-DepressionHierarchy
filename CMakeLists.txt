@@ -6,7 +6,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 find_package(NetCDF)
 
-add_subdirectory(submodules/richdem)
+add_subdirectory(submodules/richdem EXCLUDE_FROM_ALL)
 
 include_directories(submodules)
 
