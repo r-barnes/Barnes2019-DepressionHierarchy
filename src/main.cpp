@@ -1,4 +1,4 @@
-#include "fill_spill_merge.hpp"
+#include <dephier/dephier.hpp>
 #include "netcdf.hpp"
 #include <iostream>
 #include <richdem/common/Array2D.hpp>
@@ -50,22 +50,6 @@ int main(int argc, char **argv){
   //Generate flow directions, label all the depressions, and get the hierarchy
   //connecting them
   auto deps = dh::GetDepressionHierarchy<float,rd::Topology::D8>(topo, label, flowdirs);
-
-  dh::FillSpillMerge(topo, label, flowdirs, deps, wtd, ocean_level);
-
-  for(unsigned int i=0;i<topo.size();i++)
-    if(!topo.isNoData(i))
-      wtd(i) += topo(i);
-
-  SaveAsNetCDF(wtd,out_name+"-flooded.nc","value");
-
-  rd::FillDepressions<rd::Topology::D8>(topo);
-  SaveAsNetCDF(topo,out_name+"-filled.nc","value");
-
-  rd::Array2D<float> diff(wtd);
-  for(unsigned int i=0;i<topo.size();i++)
-    diff(i) = wtd(i)-topo(i);
-  SaveAsNetCDF(diff,out_name+"-diff.nc","value");
 
   std::cout<<"Finished"<<std::endl;
   std::cout<<"IO time   = "<<timer_io.accumulated()<<" s"<<std::endl;

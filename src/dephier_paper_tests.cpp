@@ -1,4 +1,4 @@
-#include "dephier.hpp"
+#include <dephier/dephier.hpp>
 
 #include <richdem/common/Array2D.hpp>
 #include <richdem/depressions/Barnes2014.hpp>
