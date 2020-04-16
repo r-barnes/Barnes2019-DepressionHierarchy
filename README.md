@@ -1,10 +1,16 @@
 [![DOI](https://zenodo.org/badge/179896888.svg)](https://zenodo.org/badge/latestdoi/179896888)
 
-Depression Hierarchies and Fill-Spill-Merge
-===========================================
+Depression Hierarchies
+======================
 
 **Title of Manuscript**:
  * Computing water flow through complex landscapes, Part 2: Finding hierarchies in depressions and morphological segmentations (doi: [10.5194/esurf-2019-34](https://doi.org/10.5194/esurf-2019-34))
+
+**Previous Manuscripts**:
+ * Computing water flow through complex landscapes – Part 1: Incorporating depressions in flow routing using FlowFill (doi: [10.5194/esurf-7-737-2019](https://doi.org/10.5194/esurf-7-737-2019))
+
+**Subsequent Manuscripts**
+ * Computing water flow through complex landscapes, Part 3: Fill-Spill-Merge: Flow routing in depression hierarchies (doi: TODO)
 
 **Authors**: Richard Barnes, Kerry Callaghan, Andrew Wickert
 
