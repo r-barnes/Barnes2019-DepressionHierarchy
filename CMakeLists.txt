@@ -15,19 +15,11 @@ target_include_directories(dephier INTERFACE include/)
 target_compile_features(dephier INTERFACE cxx_auto_type cxx_std_17)
 
 
-add_executable(dephier.exe
-  src/main.cpp
-)
-
-target_link_libraries(dephier.exe 
-  PRIVATE 
-    dephier
-    richdem
-    netcdf
-)
+add_executable(dephier.exe src/main.cpp)
+target_link_libraries(dephier.exe PRIVATE dephier richdem ${NETCDF_LIBRARIES})
 
 add_executable(dephier_paper_tests.exe src/dephier_paper_tests.cpp)
-target_link_libraries(dephier_paper_tests.exe PRIVATE dephier richdem netcdf)
+target_link_libraries(dephier_paper_tests.exe PRIVATE dephier richdem ${NETCDF_LIBRARIES})
 target_compile_features(dephier_paper_tests.exe PUBLIC cxx_auto_type cxx_std_17)
 
 install(TARGETS dephier.exe DESTINATION bin)
