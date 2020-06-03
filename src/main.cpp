@@ -10,7 +10,7 @@ namespace dh = richdem::dephier;
 
 int main(int argc, char **argv){
   if(argc!=4){
-    std::cout<<"Syntax: "<<argv[0]<<" <Input> <Output> <Ocean Level>"<<std::endl;
+    std::cout<<"Syntax: "<<argv[0]<<" <Input> <Output Prefix> <Ocean Level>"<<std::endl;
     return -1;
   }
 
