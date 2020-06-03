@@ -46,7 +46,13 @@ tests are available on Github and Zenodo.
 Compilation
 -----------
 
-Be sure to acquire submodules either upon initially obtaining the repository:
+Ensure you have a working compiler.
+
+The following compilers are known to work: GCC7.5.0, GCC8.4.0, GCC9.3.0
+
+The following compilers are known to be too old: GCC5.4.0
+
+Next, be sure to acquire submodules either upon initially obtaining the repository:
 
     git clone --recurse-submodules -j8 https://github.com/r-barnes/Barnes2019-DepressionHierarchy.git
 
