@@ -31,11 +31,8 @@ int main(int argc, char **argv){
   std::cout<<"m Data height = "<<topo.height()<<std::endl;
   std::cout<<"m Data cells  = "<<topo.numDataCells()<<std::endl;
 
-  rd::Array2D<float>          wtd     (topo.width(), topo.height(), 1000       ); //All cells have some water
   rd::Array2D<dh::dh_label_t> label   (topo.width(), topo.height(), dh::NO_DEP ); //No cells are part of a depression
   rd::Array2D<rd::flowdir_t>  flowdirs(topo.width(), topo.height(), rd::NO_FLOW); //No cells flow anywhere
-
-  wtd.setNoData(topo.noData());
 
   //Label the ocean cells. This is a precondition for using
   //`GetDepressionHierarchy()`.
@@ -43,7 +40,6 @@ int main(int argc, char **argv){
   for(unsigned int i=0;i<label.size();i++){
     if(topo.isNoData(i) || topo(i)==ocean_level){ //Ocean Level is assumed to be lower than any other cells (even Death Valley)
       label(i) = dh::OCEAN;
-      wtd  (i) = 0;
     }
   }
 
@@ -64,18 +60,12 @@ int main(int argc, char **argv){
     }
   }
 
-  //Adjust flood heights to absolute elevations
-  for(unsigned int i=0;i<topo.size();i++)
-    if(!topo.isNoData(i))
-      wtd(i) += topo(i);
-
-  wtd.saveGDAL  (out_name+"-flooded.tif");
   label.saveGDAL(out_name+"-label.tif");
 
   timer_io.stop();
 
   // NOTE: Demonstrates how to save to NetCDF
-  // SaveAsNetCDF(wtd, out_name+"-flooded.nc", "value");
+  // SaveAsNetCDF(label, out_name+"-label.nc", "value");
 
   std::cout<<"Finished"<<std::endl;
   std::cout<<"IO time   = "<<timer_io.accumulated()<<" s"<<std::endl;
