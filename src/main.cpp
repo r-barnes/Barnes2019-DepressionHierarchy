@@ -51,6 +51,32 @@ int main(int argc, char **argv){
   //connecting them
   auto deps = dh::GetDepressionHierarchy<float,rd::Topology::D8>(topo, label, flowdirs);
 
+  timer_io.start();
+
+  //GraphViz dot-style output for drawing depression hierarchy graphs.
+  {
+    std::ofstream fgraph(out_name+"-graph.csv");
+    fgraph<<"parent,child,oceanlink\n";
+    for(unsigned int i=1;i<deps.size();i++){
+      fgraph<<deps[i].parent<<","<<i<<",";
+      //Is it an ocean link?
+      fgraph<<(deps[i].parent!=dh::NO_VALUE && (deps[i].parent==dh::OCEAN || !(deps[deps[i].parent].lchild==i || deps[deps[i].parent].rchild==i)))<<"\n";
+    }
+  }
+
+  //Adjust flood heights to absolute elevations
+  for(unsigned int i=0;i<topo.size();i++)
+    if(!topo.isNoData(i))
+      wtd(i) += topo(i);
+
+  wtd.saveGDAL  (out_name+"-flooded.tif");
+  label.saveGDAL(out_name+"-label.tif");
+
+  timer_io.stop();
+
+  // NOTE: Demonstrates how to save to NetCDF
+  // SaveAsNetCDF(wtd, out_name+"-flooded.nc", "value");
+
   std::cout<<"Finished"<<std::endl;
   std::cout<<"IO time   = "<<timer_io.accumulated()<<" s"<<std::endl;
 
