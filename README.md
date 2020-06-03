@@ -41,7 +41,18 @@ to selectively fill or breach depressions, or to accelerate dynamic models of
 hydrological flow. Complete, well-commented, open-source code and correctness
 tests are available on Github and Zenodo.
 
+Prerequisites
+-------------
 
+Install the prerequisites
+
+### Linux
+
+    sudo apt install libnetcdf-dev cmake
+
+### Mac
+
+    brew install gdal netcdf libomp cmake
 
 Compilation
 -----------
