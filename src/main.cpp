@@ -60,6 +60,7 @@ int main(int argc, char **argv){
     }
   }
 
+  label.projection = topo.projection;
   label.saveGDAL(out_name+"-label.tif");
 
   timer_io.stop();
