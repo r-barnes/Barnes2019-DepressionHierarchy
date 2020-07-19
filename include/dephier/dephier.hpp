@@ -254,18 +254,22 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
   typedef std::unordered_map<OutletLink, Outlet<elev_t>, OutletHash<elev_t>> outletdb_t;
   outletdb_t outlet_database;
 
-  //The priority queue ensures that cells are visited in order from lowest to
-  //highest. If two or more cells are of equal elevation then the one added last
-  //(most recently) is returned from the queue first. This ensures that a single
-  //depression gets all the cells within a flat area.
-  PriorityQueue<elev_t> pq;
+  //Places to seed depression growth from. These vectors are used to make the
+  //search for seeds parallel, yet deterministic.
+  std::vector<flat_c_idx> ocean_seeds;
+  std::vector<flat_c_idx> land_seeds;
+  //Reduce reallocations by assuming 2.5% of the map is seeds
+  ocean_seeds.reserve(dem.width()*dem.height()/40);
+  land_seeds.reserve(dem.width()*dem.height()/40);
+
+  #pragma omp declare reduction(merge : std::vector<flat_c_idx> : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end()))
 
   std::cerr<<"p Adding ocean cells to priority-queue..."<<std::endl;
   //We assume the user has already specified a few ocean cells from which to
   //begin looking for depressions. We add all of these ocean cells to the
   //priority queue now.
   int ocean_cells = 0;
-  #pragma omp parallel for collapse(2) reduction(+:ocean_cells)
+  #pragma omp parallel for collapse(2) reduction(+:ocean_cells) reduction(merge:ocean_seeds)
   for(int y=0;y<dem.height();y++)
   for(int x=0;x<dem.width();x++){
     if(label(x,y)!=OCEAN)
@@ -278,8 +282,7 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
       }
     }
     if(has_non_ocean){       //If they are ocean cells, put them in the priority queue
-      #pragma omp critical
-      pq.emplace(dem(x,y), dem.xyToI(x,y));
+      ocean_seeds.emplace_back(dem.xyToI(x,y));
       ocean_cells++;
     }
   }
@@ -309,7 +312,7 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
   //finds and this shouldn't slow things down too much!
   int pit_cell_count = 0;
   progress.start(dem.size());
-  #pragma omp parallel for collapse(2) reduction(+:pit_cell_count)
+  #pragma omp parallel for collapse(2) reduction(+:pit_cell_count) reduction(merge:land_seeds)
   for(int y=0;y<dem.height();y++)  //Look at all the cells
   for(int x=0;x<dem.width() ;x++){ //Yes, all of them
     ++progress;
@@ -331,15 +334,34 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
       }
     }
     if(!has_lower){           //The cell can't drain, so it is a pit cell
+      land_seeds.emplace_back(dem.xyToI(x,y));
       pit_cell_count++;       //Add to pit cell count. Parallel safe because of reduction.
-      #pragma omp critical    //Only one thread can safely access pq at a time
-      pq.emplace(dem(x,y), dem.xyToI(x,y)); //Add cell to pq
     }
   }
   progress.stop();
   std::cerr<<"t Pit cells found in = "<<progress.time_it_took()<<" s"<<std::endl;
 
+  //Since the above runs in parallel, the ordering of the seed cells is
+  //nondeterministic. Let's fix that.
+  std::sort(ocean_seeds.begin(), ocean_seeds.end());
+  std::sort(land_seeds.begin(), land_seeds.end());
 
+  //The priority queue ensures that cells are visited in order from lowest to
+  //highest. If two or more cells are of equal elevation then the one added last
+  //(most recently) is returned from the queue first. This ensures that a single
+  //depression gets all the cells within a flat area.
+  PriorityQueue<elev_t> pq;
+
+  //Add all the seed cells to the PQ
+  for(const auto &x: ocean_seeds)
+    pq.emplace(dem(x), x);
+  ocean_seeds.clear();
+  ocean_seeds.shrink_to_fit();
+
+  for(const auto &x: land_seeds)
+    pq.emplace(dem(x), x);
+  land_seeds.clear();
+  land_seeds.shrink_to_fit();
 
   //The priority queue now contains all of the ocean cells as well as all of the
   //pit cells. We will now proceed through the cells by always pulling the cell
