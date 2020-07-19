@@ -79,7 +79,7 @@ class Depression {
   dh_label_t dep_label = 0;
   //Number of cells contained within the depression and its children
   uint32_t cell_count = 0;
-  //Total of elevations within the depression, used in the WLE. Because I think I need to start adding up total elevations before I know the outlet of the depression. 
+  //Total of elevations within the depression, used in the WLE. Because I think I need to start adding up total elevations before I know the outlet of the depression.
   //double dep_sum_elevations = 0;
   //Volume of the depression and its children. Used in the Water Level Equation (see below).
   double   dep_vol    = 0;
@@ -160,7 +160,7 @@ struct OutletHash {
     //doesn't need to be symmetric with respect to depa and depb.
 
     //Hash function from: https://stackoverflow.com/a/27952689/752843
-    return out.depa^(out.depb + 0x9e3779b9 + (out.depa << 6) + (out.depa >> 2));    
+    return out.depa^(out.depb + 0x9e3779b9 + (out.depa << 6) + (out.depa >> 2));
   }
 };
 
@@ -180,7 +180,7 @@ using PriorityQueue = radix_heap::pair_radix_heap<elev_t,uint64_t>;
 
 
 //Cell is not part of a depression
-const dh_label_t NO_DEP = std::numeric_limits<dh_label_t>::max(); 
+const dh_label_t NO_DEP = std::numeric_limits<dh_label_t>::max();
 //Cell is part of the ocean and a place from which we begin searching for
 //depressions.
 const dh_label_t OCEAN  = 0;
@@ -210,7 +210,7 @@ void CalculateTotalVolumes(DepressionHierarchy<elev_t> &deps);
 //        flowdirs - A value [0,7] indicated which direction water from the cell
 //                   flows in order to go "downhill". All cells have a flow
 //                   direction (even flats) except for pit cells.
-template<class elev_t, Topology topo>                                                     
+template<class elev_t, Topology topo>
 DepressionHierarchy<elev_t> GetDepressionHierarchy(
   const Array2D<elev_t> &dem,
   Array2D<dh_label_t>   &label,
@@ -239,7 +239,7 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
     dx         = d8x;
     dy         = d8y;
     dinverse   = d8_inverse;
-    neighbours = 8;    
+    neighbours = 8;
   } else {
     throw std::runtime_error("Unrecognised topology!");
   }
@@ -319,10 +319,10 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
     bool has_lower     = false;    //Pretend we have no lower neighbours
     for(int n=1;n<=neighbours;n++){ //Check out our neighbours
       //Use offset to get neighbour x coordinate, wrapping as needed
-      // const int nx = ModFloor(x+dx[n],dem.width()); 
+      // const int nx = ModFloor(x+dx[n],dem.width());
       const int nx = x+dx[n];
       //Use offset to get neighbour y coordinate
-      const int ny = y+dy[n];      
+      const int ny = y+dy[n];
       if(!dem.inGrid(nx,ny))  //Is cell outside grid (too far North/South)?
         continue;             //Yup: skip it.
       if(dem(nx,ny)<my_elev){ //Is this neighbour lower than focal cell?
@@ -400,14 +400,14 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
       //not being part of a depression is if that cell were added as a pit cell.
       //For each pit cell we find, we make a new depression and label it
       //accordingly. Not all the pit cells originally added will form new
-      //depressions as flat cells will relabel their neighbours and the first                                                 
+      //depressions as flat cells will relabel their neighbours and the first
       //cell found in a flat determines the label for the entirety of that flat.
       clabel            = depressions.size();         //In a 0-based indexing system, size is equal to the id of the next flat
       auto &newdep      = depressions.emplace_back(); //Add the next flat (increases size by 1)
       newdep.pit_cell   = dem.xyToI(cx,cy);           //Make a note of the pit cell's location
       newdep.pit_elev   = celev;                      //Make a note of the pit cell's elevation
       newdep.dep_label  = clabel;                     //I am storing the label in the object so that I can find it later and call up the number of cells and volume (better way of doing this?) -- I have since realised I can use the index in the depressions array. So perhaps the label is no longer needed?
-      label(ci)         = clabel;                     //Update cell with new label                                                           
+      label(ci)         = clabel;                     //Update cell with new label
     } else {
 
       //Cell has already been assigned to a depression. In this case, one of two
@@ -415,7 +415,7 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
       //case the cell has neighbours which have not yet been seen. (2) This cell
       //was part of a flat which has previously been processed by a wavefront
       //beginning at some other cell. In this case, all of this cell's
-      //neighbours will have already been seen and added to the priority queue.   
+      //neighbours will have already been seen and added to the priority queue.
       //However, it is harmless to check on them again.
     }
 
@@ -432,7 +432,7 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
       const auto ni     = dem.xyToI(nx,ny);           //Flat index of neighbour
       const auto nlabel = label(ni);                  //Label of neighbour
 
-      if(nlabel==NO_DEP){                             //Neighbour has not been visited yet 
+      if(nlabel==NO_DEP){                             //Neighbour has not been visited yet
         label(ni) = clabel;                           //Give the neighbour my label
         pq.emplace(dem(ni), dem.xyToI(nx,ny));        //Add the neighbour to the priority queue
         flowdirs(nx,ny) = dinverse[n];                //Neighbour flows in the direction of this cell
@@ -483,7 +483,7 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
             outlet.out_elev = out_elev;             //Also, update the outlet's elevation
           }
         } else {                                    //No preexisting link found; create a new one
-          outlet_database[olink] = Outlet<elev_t>(clabel,nlabel,out_cell,out_elev);   
+          outlet_database[olink] = Outlet<elev_t>(clabel,nlabel,out_cell,out_elev);
         }
       }
 
@@ -568,7 +568,7 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
     ++progress;
     auto depa_set = djset.findSet(outlet.depa); //Find the ultimate parent of Depression A
     auto depb_set = djset.findSet(outlet.depb); //Find the ultimate parent of Depression B
-    
+
     //If the depressions are already part of the same meta-depression, then
     //nothing needs to be done.
     if(depa_set==depb_set)
@@ -610,11 +610,11 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
 
       //Ensure we don't modify depressions that have already found their paths
       assert(dep.out_cell==NO_VALUE);
-      assert(dep.odep==NO_VALUE);            
+      assert(dep.odep==NO_VALUE);
 
       //Point this depression to the ocean through Depression B Label
       dep.parent       = outlet.depb;        //Set Depression Meta(A) parent
-      dep.out_elev     = outlet.out_elev;    //Set Depression Meta(A) outlet elevation                                     
+      dep.out_elev     = outlet.out_elev;    //Set Depression Meta(A) outlet elevation
       dep.out_cell     = outlet.out_cell;    //Set Depression Meta(A) outlet cell index
       dep.odep         = outlet.depb;        //Depression Meta(A) overflows into Depression B
       dep.ocean_parent = true;
@@ -628,7 +628,7 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
       auto &depb          = depressions.at(depb_set); //Reference to Depression B MetaLabel
 
       //Ensure we haven't already given these depressions outlet information
-      assert(depa.odep==NO_VALUE);     
+      assert(depa.odep==NO_VALUE);
       assert(depb.odep==NO_VALUE);
 
       const auto newlabel = depressions.size();       //Label of A and B's new parent depression
@@ -642,7 +642,7 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
       depb.odep     = depa_set;        //Note that Meta(B) overflows, logically, into Meta(A)
       depa.geolink  = outlet.depb;     //Meta(A) overflows, geographically, into B
       depb.geolink  = outlet.depa;     //Meta(B) overflows, geographically, into A
-   
+
       //Be sure that this happens AFTER we are done using the `depa` and `depb`
       //references since they will be invalidated if `depressions` has to
       //resize!
@@ -650,7 +650,7 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
 
       auto &newdep     = depressions.emplace_back();                                                                       //is it right to create a new depression for the metadepression like this?
       newdep.lchild    = depa_set;
-      newdep.rchild    = depb_set; 
+      newdep.rchild    = depb_set;
       newdep.dep_label = newlabel;
       newdep.pit_cell  = depa_pitcell_temp;
 
@@ -707,7 +707,7 @@ void CalculateMarginalVolumes(
       ++progress;
       const auto my_elev = dem(i);
       auto clabel        = label(i);
-      
+
       while(clabel!=OCEAN && my_elev>deps.at(clabel).out_elev)
         clabel = deps[clabel].parent;
 
@@ -787,4 +787,3 @@ void LastLayer(Array2D<dh_label_t> &label, const Array2D<float> &dem, const Depr
 }
 
 #endif
-
