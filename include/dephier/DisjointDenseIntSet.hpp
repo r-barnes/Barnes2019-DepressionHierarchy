@@ -78,6 +78,9 @@ class DisjointDenseIntSet {
   //the chain will take `O(1)` time. This technique is known as "path
   //compression".
   unsigned int findSet(unsigned int n){
+    if(n>=parent.size()){
+      throw std::runtime_error("DisjointDenseIntSet::findSet(" + std::to_string(n) + ") is looking for a set outside the valid range, which is [0," + std::to_string(parent.size()) + ")!");
+    }
     if(parent[n]==n){                  //Am I my own parent?
       return n;                        //Yes: I represent the set in question.
     } else {                           //No.

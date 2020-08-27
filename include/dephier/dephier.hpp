@@ -272,8 +272,12 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
   #pragma omp parallel for collapse(2) reduction(+:ocean_cells) reduction(merge:ocean_seeds)
   for(int y=0;y<dem.height();y++)
   for(int x=0;x<dem.width();x++){
-    if(label(x,y)!=OCEAN)
+    if(label(x,y)!=OCEAN){
+      if(label(x,y)!=NO_DEP){
+        throw std::runtime_error("Label array given to GetDepressionHierarchy must contain only NO_DEP and OCEAN labels!");
+      }
       continue;
+    }
     bool has_non_ocean = false;
     for(int n=1;n<=neighbours;n++){
       if(label.inGrid(x+dx[n],y+dy[n]) && label(x+dx[n],y+dy[n])!=OCEAN){
