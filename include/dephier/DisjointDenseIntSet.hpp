@@ -17,9 +17,9 @@
 class DisjointDenseIntSet {
  private:
   //How many sets are children of this set. Initially 0.
-  std::vector<unsigned int> rank;    
+  std::vector<unsigned int> rank;
   //Which set is this set's parent. May be the set itself.
-  std::vector<unsigned int> parent;  
+  std::vector<unsigned int> parent;
 
   //When a set value X is passed to the data structure, this checks to see if
   //the set exists. If not, the set is created, along with all the sets between
@@ -29,10 +29,10 @@ class DisjointDenseIntSet {
       return;                          //Yup.
                                        //Nope.
     const auto old_size = rank.size(); //Get old maximum set value
-    
+
     //Resize so that `newN` is a valid value. None of the new sets have
     //children.
-    rank.resize(newN+1,0);             
+    rank.resize(newN+1,0);
 
     //Resize so that `newN` is a valid value
     parent.resize(newN+1);
@@ -85,7 +85,7 @@ class DisjointDenseIntSet {
       return n;                        //Yes: I represent the set in question.
     } else {                           //No.
       //Who is my parent's ultimate parent? Make them my parent.
-      return parent[n] = findSet(parent[n]); 
+      return parent[n] = findSet(parent[n]);
     }
   }
 
@@ -99,7 +99,7 @@ class DisjointDenseIntSet {
     //`findSet` involving any set in the chain will take `O(1)` time.
 
     //If A and B already share a parent, then they do not need merging.
-    if(roota==rootb)         
+    if(roota==rootb)
       return;
 
     //If we always naively tacked A onto B then we could develop a worst-case
