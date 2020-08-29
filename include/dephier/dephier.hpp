@@ -794,7 +794,7 @@ void CalculateTotalVolumes(
 //Utility function for doing various relabelings based on the depression
 //hierarchy.
 template<class elev_t>
-void LastLayer(Array2D<dh_label_t> &label, const Array2D<float> &dem, const DepressionHierarchy<elev_t> &depressions){
+void LastLayer(Array2D<dh_label_t> &label, const Array2D<elev_t> &dem, const DepressionHierarchy<elev_t> &depressions){
   #pragma omp parallel for collapse(2)
   for(int y=0;y<label.height();y++)
   for(int x=0;x<label.width();x++){
