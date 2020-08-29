@@ -268,16 +268,19 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
   //We assume the user has already specified a few ocean cells from which to
   //begin looking for depressions. We add all of these ocean cells to the
   //priority queue now.
-  int ocean_cells = 0;
+  uint64_t ocean_cells = 0;
   #pragma omp parallel for collapse(2) reduction(+:ocean_cells) reduction(merge:ocean_seeds)
   for(int y=0;y<dem.height();y++)
   for(int x=0;x<dem.width();x++){
+    //Ensure the input only has OCEAN and NO_DEP labels.
     if(label(x,y)!=OCEAN){
       if(label(x,y)!=NO_DEP){
         throw std::runtime_error("Label array given to GetDepressionHierarchy must contain only NO_DEP and OCEAN labels!");
       }
       continue;
     }
+
+    //We'll only add ocean cells to the PQ if they border a non-ocean cell
     bool has_non_ocean = false;
     for(int n=1;n<=neighbours;n++){
       if(label.inGrid(x+dx[n],y+dy[n]) && label(x+dx[n],y+dy[n])!=OCEAN){
@@ -289,6 +292,10 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
       ocean_seeds.emplace_back(dem.xyToI(x,y));
       ocean_cells++;
     }
+  }
+
+  if(ocean_cells==0){
+    throw std::runtime_error("No OCEAN cells found, could not make a DepressionHierarchy!");
   }
 
   //The 0th depression is the ocean. We add it to the list of depressions now
