@@ -562,8 +562,10 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
   });
 
   //TODO: For debugging
-  for(unsigned int i=0;i<outlets.size()-1;i++)
-    assert(outlets.at(i).out_elev<=outlets.at(i+1).out_elev);
+  if(outlets.size()>0){
+    for(unsigned int i=0;i<outlets.size()-1;i++)
+      assert(outlets.at(i).out_elev<=outlets.at(i+1).out_elev);
+  }
 
   //Now that we have the outlets in order, we'll visit them from lowest to
   //highest. If two outlets are at the same elevation we visit them in an
