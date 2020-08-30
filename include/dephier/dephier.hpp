@@ -1,13 +1,15 @@
-#ifndef _dephier_hpp_
-#define _dephier_hpp_
+#pragma once
 
 #include "radix_heap.hpp"
-#include <richdem/common/Array2D.hpp>
-#include <richdem/common/timer.hpp>
-#include <richdem/common/ProgressBar.hpp>
-#include <richdem/common/grid_cell.hpp>
-#include <richdem/common/constants.hpp>
 #include "DisjointDenseIntSet.hpp"
+
+#include <richdem/common/Array2D.hpp>
+#include <richdem/common/constants.hpp>
+#include <richdem/common/grid_cell.hpp>
+#include <richdem/common/math.hpp>
+#include <richdem/common/ProgressBar.hpp>
+#include <richdem/common/timer.hpp>
+
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -791,7 +793,7 @@ void CalculateTotalVolumes(
     //counted simply by adding their volumes to their parent depression.
     dep.dep_vol = dep.cell_count*static_cast<double>(dep.out_elev)-dep.total_elevation;
 
-    assert(dep.lchild==NO_VALUE || deps.at(dep.lchild).dep_vol+deps.at(dep.rchild).dep_vol<=dep.dep_vol);
+    assert(dep.lchild==NO_VALUE || fp_less_than(deps.at(dep.lchild).dep_vol+deps.at(dep.rchild).dep_vol,dep.dep_vol));
   }
   progress.stop();
 }
@@ -820,5 +822,3 @@ void LastLayer(Array2D<dh_label_t> &label, const Array2D<elev_t> &dem, const Dep
 }
 
 }
-
-#endif
