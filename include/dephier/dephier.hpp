@@ -794,7 +794,7 @@ void CalculateTotalVolumes(
     //counted simply by adding their volumes to their parent depression.
     dep.dep_vol = dep.cell_count*static_cast<double>(dep.out_elev)-dep.total_elevation;
 
-    assert(dep.lchild==NO_VALUE || fp_less_than(deps.at(dep.lchild).dep_vol+deps.at(dep.rchild).dep_vol,dep.dep_vol));
+    assert(dep.lchild==NO_VALUE || fp_le(deps.at(dep.lchild).dep_vol+deps.at(dep.rchild).dep_vol,dep.dep_vol));
   }
   progress.stop();
 }
