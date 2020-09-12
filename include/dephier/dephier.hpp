@@ -6,6 +6,7 @@
 #include <richdem/common/Array2D.hpp>
 #include <richdem/common/constants.hpp>
 #include <richdem/common/grid_cell.hpp>
+#include <richdem/common/logger.hpp>
 #include <richdem/common/math.hpp>
 #include <richdem/common/ProgressBar.hpp>
 #include <richdem/common/timer.hpp>
@@ -225,7 +226,7 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
 
   timer_dephier.start();
 
-  std::cerr<<"\033[91m##########Getting depression hierarchy\033[39m"<<std::endl;
+  RDLOG_ALG_NAME<<"DepressionHierarchy";
 
   //A D4 or D8 topology can be used.
   const int    *dx;
@@ -266,7 +267,7 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
 
   #pragma omp declare reduction(merge : std::vector<flat_c_idx> : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end()))
 
-  std::cerr<<"p Adding ocean cells to priority-queue..."<<std::endl;
+  RDLOG_PROGRESS<<"p Adding ocean cells to priority-queue...";
   //We assume the user has already specified a few ocean cells from which to
   //begin looking for depressions. We add all of these ocean cells to the
   //priority queue now.
@@ -312,7 +313,7 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
   }
 
 
-  std::cerr<<"p Finding pit cells..."<<std::endl;
+  RDLOG_PROGRESS<<"p Finding pit cells...";
 
   //Here we find the pit cells of internally-draining regions. We define these
   //to be cells without any downstream neighbours. Note that this means we will
@@ -352,7 +353,7 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
     }
   }
   progress.stop();
-  std::cerr<<"t Pit cells found in = "<<progress.time_it_took()<<" s"<<std::endl;
+  RDLOG_TIME_USE<<"t Pit cells found in = "<<progress.time_it_took()<<" s";
 
   //Since the above runs in parallel, the ordering of the seed cells is
   //nondeterministic. Let's fix that.
@@ -412,7 +413,7 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
   //cells are of the same elevation then we visit the one added last (most
   //recently) first.
 
-  std::cerr<<"p Searching for outlets..."<<std::endl;
+  RDLOG_PROGRESS<<"p Searching for outlets...";
 
   progress.start(dem.size());
   while(!pq.empty()){
@@ -525,7 +526,7 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
     }
   }
   progress.stop();
-  std::cerr<<"t Outlets found in = "<<progress.time_it_took()<<" s"<<std::endl;
+  RDLOG_TIME_USE<<"t Outlets found in = "<<progress.time_it_took()<<" s";
 
   //At this point every cell is associated with the label of a depression. Each
   //depression contains the cells lower than its outlet elevation as well as all
@@ -596,7 +597,7 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
   //needed.
   DisjointDenseIntSet djset(depressions.size());
 
-  std::cerr<<"p Constructing hierarchy from outlets..."<<std::endl;
+  RDLOG_PROGRESS<<"p Constructing hierarchy from outlets...";
 
   //Visit outlets in order of elevation from lowest to highest. If two outlets
   //are at the same elevation, choose one arbitrarily.
@@ -697,7 +698,7 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
   }
   progress.stop();
 
-  std::cerr<<"t Time to construct Depression Hierarchy = "<<timer_dephier.stop()<<" s"<<std::endl;
+  RDLOG_TIME_USE<<"t Time to construct Depression Hierarchy = "<<timer_dephier.stop()<<" s";
 
 
   //At this point we have a 2D array in which each cell is labeled. This label
@@ -714,8 +715,8 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
 
   CalculateTotalVolumes(depressions);
 
-  std::cerr<<"t Time to calculate volumes = "<<timer_volumes.stop()<<" s"<<std::endl;
-  std::cerr<<"t Total time in depression hierarchy calculations = "<<timer_overall.stop()<<" s"<<std::endl;
+  RDLOG_TIME_USE<<"t Time to calculate volumes = "<<timer_volumes.stop()<<" s";
+  RDLOG_TIME_USE<<"t Total time in depression hierarchy calculations = "<<timer_overall.stop()<<" s";
 
   return depressions;
 }
@@ -730,7 +731,7 @@ void CalculateMarginalVolumes(
 ){
   ProgressBar progress;
 
-  std::cerr<<"p Calculating depression marginal volumes..."<<std::endl;
+  RDLOG_PROGRESS<<"p Calculating depression marginal volumes...";
 
   //Get the marginal depression cell counts and total elevations
   progress.start(dem.size());
@@ -772,7 +773,7 @@ void CalculateTotalVolumes(
 ){
   ProgressBar progress;
 
-  std::cerr<<"p Calculating depression total volumes..."<<std::endl;
+  RDLOG_PROGRESS<<"p Calculating depression total volumes...";
   //Calculate total depression volumes and cell counts
   progress.start(deps.size());
   for(unsigned int d=0;d<deps.size();d++){
