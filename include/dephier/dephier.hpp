@@ -199,6 +199,53 @@ void CalculateTotalVolumes(DepressionHierarchy<elev_t> &deps);
 
 
 
+template<class elev_t>
+std::ostream& operator<<(std::ostream &out, const DepressionHierarchy<elev_t> &deps){
+  std::vector<int> child_count;
+  std::vector<size_t> stack;
+
+  const std::function<void(const size_t root, const size_t depth)> print_helper = [&](const size_t root, const size_t depth) -> void {
+    const auto &dep = deps.at(root);
+    stack.push_back(root);
+    child_count.push_back( (dep.lchild!=NO_VALUE) + (dep.rchild!=NO_VALUE) + dep.ocean_linked.size() );
+
+    for(int i=0;i<depth;i++){
+      if(child_count.at(i)>1 && i==depth-1)
+        out<<(dep.ocean_parent?"╠═":"├─");
+      else if(child_count.at(i)==1 && i==depth-1)
+        out<<(dep.ocean_parent?"╚═":"└─");
+      else if(child_count.at(i)>2)
+        out<<"║ ";
+      else if(child_count.at(i)>1)
+        out<<"│ ";
+      else
+        out<<"  ";
+    }
+
+    out<<"Id="<<root
+       <<", dep_vol="<<dep.dep_vol
+       <<", water_vol="<<dep.water_vol
+       <<", pit_cell="<<dep.pit_cell
+       <<", out_elev="<<dep.out_elev
+       <<", parent="<<dep.parent<<"\n";
+
+    if(dep.lchild!=NO_VALUE) { print_helper(dep.lchild,depth+1); child_count.back()--; }
+    if(dep.rchild!=NO_VALUE) { print_helper(dep.rchild,depth+1); child_count.back()--; }
+    for(const auto &x: dep.ocean_linked){
+      print_helper(x,depth+1);
+      child_count.back()--;
+    }
+    stack.pop_back();
+    child_count.pop_back();
+  };
+
+  print_helper(0, 0);
+
+  return out;
+}
+
+
+
 //Calculate the hierarchy of depressions. Takes as input a digital elevation
 //model and a set of labels. The labels should have `OCEAN` for cells
 //representing the "ocean" (the place to which depressions drain) and `NO_DEP`
