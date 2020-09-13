@@ -226,6 +226,7 @@ std::ostream& operator<<(std::ostream &out, const DepressionHierarchy<elev_t> &d
        <<", dep_vol="<<dep.dep_vol
        <<", water_vol="<<dep.water_vol
        <<", pit_cell="<<dep.pit_cell
+       <<", out_cell="<<dep.out_cell
        <<", out_elev="<<dep.out_elev
        <<", parent="<<dep.parent
        <<", odep="<<dep.odep
