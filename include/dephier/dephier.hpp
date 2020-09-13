@@ -227,7 +227,9 @@ std::ostream& operator<<(std::ostream &out, const DepressionHierarchy<elev_t> &d
        <<", water_vol="<<dep.water_vol
        <<", pit_cell="<<dep.pit_cell
        <<", out_elev="<<dep.out_elev
-       <<", parent="<<dep.parent<<"\n";
+       <<", parent="<<dep.parent
+       <<", odep="<<dep.odep
+       <<"\n";
 
     if(dep.lchild!=NO_VALUE) { print_helper(dep.lchild,depth+1); child_count.back()--; }
     if(dep.rchild!=NO_VALUE) { print_helper(dep.rchild,depth+1); child_count.back()--; }
