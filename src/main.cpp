@@ -1,7 +1,9 @@
 #include <dephier/dephier.hpp>
-#include "netcdf.hpp"
-#include <iostream>
+
 #include <richdem/common/Array2D.hpp>
+#include <richdem/common/gdal.hpp>
+
+#include <iostream>
 #include <string>
 #include <stdexcept>
 
@@ -64,9 +66,6 @@ int main(int argc, char **argv){
   label.saveGDAL(out_name+"-label.tif");
 
   timer_io.stop();
-
-  // NOTE: Demonstrates how to save to NetCDF
-  // SaveAsNetCDF(label, out_name+"-label.nc", "value");
 
   std::cout<<"Finished"<<std::endl;
   std::cout<<"IO time   = "<<timer_io.accumulated()<<" s"<<std::endl;

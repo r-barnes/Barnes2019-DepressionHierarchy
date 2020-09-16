@@ -48,11 +48,11 @@ Install the prerequisites
 
 ### Linux
 
-    sudo apt install libnetcdf-dev cmake
+    sudo apt install libgdal-dev cmake
 
 ### Mac
 
-    brew install gdal netcdf libomp cmake
+    brew install gdal libomp cmake
 
 Compilation
 -----------
