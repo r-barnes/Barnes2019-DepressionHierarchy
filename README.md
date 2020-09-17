@@ -44,6 +44,9 @@ tests are available on Github and Zenodo.
 Prerequisites
 -------------
 
+Although GDAL is not required to use the library, it is needed to run the
+example program.
+
 Install the prerequisites
 
 ### Linux
