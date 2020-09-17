@@ -60,7 +60,7 @@ class Depression {
   //by `odep`. However, odep must flood from the bottom up. Therefore, we keep
   //track of the `geolink`, which indicates what leaf depression the overflow is
   //initially routed into.
-  flat_c_idx geolink  = NO_VALUE;
+  dh_label_t geolink  = NO_VALUE;
   //Elevation of the pit cell. Since the pit cell has the lowest elevation of
   //any cell in the depression, we initialize this to infinity.
   elev_t  pit_elev = std::numeric_limits<elev_t>::infinity();
