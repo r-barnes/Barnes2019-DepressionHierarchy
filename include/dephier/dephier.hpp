@@ -162,7 +162,7 @@ struct OutletHash {
     //about which order the invoking code called them in and our hash function
     //doesn't need to be symmetric with respect to depa and depb.
 
-    //Hash function from: https://stackoverflow.com/a/27952689/752843
+    //Boost hash combine function: https://stackoverflow.com/q/35985960/752843
     return out.depa^(out.depb + 0x9e3779b9 + (out.depa << 6) + (out.depa >> 2));
   }
 };
