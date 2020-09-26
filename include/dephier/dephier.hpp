@@ -704,7 +704,7 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
       dep.parent       = outlet.depb;        //Set Depression Meta(A) parent
       dep.out_elev     = outlet.out_elev;    //Set Depression Meta(A) outlet elevation
       dep.out_cell     = outlet.out_cell;    //Set Depression Meta(A) outlet cell index
-      dep.odep         = outlet.depb;        //Depression Meta(A) overflows into Depression B
+      dep.odep         = NO_VALUE;           //Since this is an ocean link, A has now overflow depression
       dep.ocean_parent = true;
       dep.geolink      = outlet.depb;        //Metadepression(A) overflows, geographically, into Depression B
       depressions.at(outlet.depb).ocean_linked.emplace_back(depa_set);
