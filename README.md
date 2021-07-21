@@ -83,7 +83,7 @@ Afterwards, compile:
 
 Run with:
 
-    ./build/dephier.exe <Input> <Output Prefix> <Ocean Level>
+    ./build/dephier.exe <Input> <Output Prefix> <Ocean Value>
 
 `<INPUT>` can be any file that GDAL can read.
 
@@ -93,4 +93,4 @@ following output files:
  * `temp/out-label.tif`: A file showing the depression hierarchy leaf label of each cell in the DEM
  * `temp/out-graph.csv`: A CSV file showing the topological relationships of the depression hierarchy's depressions
 
-`<Ocean Level>` is the elevation of the ocean within the dataset All cells having this elevation are considered to be part of the ocean.
+`<Ocean Value>` is the number used to indicate that a cell is part of the ocean.
