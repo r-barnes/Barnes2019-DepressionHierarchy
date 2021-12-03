@@ -42,8 +42,7 @@ const dh_label_t NO_VALUE  = std::numeric_limits<dh_label_t>::max();
 //one outlet at the same level one of them is arbitrarily chosen; hopefully this                                                  //so, everything should have a parent except for the ocean, right?
 //happens only rarely in natural environments.
 template<class elev_t>
-class Depression {
- public:
+struct Depression {
   //Flat index of the pit cell, the lowest cell in the depression. If more than
   //one cell shares this lowest elevation, then one is arbitrarily chosen.
   flat_c_idx pit_cell = NO_VALUE;
@@ -104,8 +103,7 @@ class Depression {
 
 //The OutletLink is used as a key for a hashtable which stores information about
 //the outlets.
-class OutletLink {
- public:
+struct OutletLink {
   dh_label_t depa;
   dh_label_t depb;
   OutletLink() = default;
@@ -120,8 +118,7 @@ class OutletLink {
 //The outlet class stores, again, the depressions being linked as well as
 //information about the link
 template<class elev_t>
-class Outlet {
- public:
+struct Outlet {
   dh_label_t depa;                //Depression A
   dh_label_t depb;                //Depression B
   flat_c_idx out_cell = NO_VALUE; //Flat-index of cell at which A and B meet.
