@@ -276,23 +276,11 @@ DepressionHierarchy<elev_t> GetDepressionHierarchy(
   RDLOG_ALG_NAME<<"DepressionHierarchy";
 
   //A D4 or D8 topology can be used.
-  const int    *dx;
-  const int    *dy;
-  const int    *dinverse;
-  int     neighbours;
-  if(topo==Topology::D4){
-    dx         = d4x;
-    dy         = d4y;
-    dinverse   = d4_inverse;
-    neighbours = 4;
-  } else if(topo==Topology::D8){
-    dx         = d8x;
-    dy         = d8y;
-    dinverse   = d8_inverse;
-    neighbours = 8;
-  } else {
-    throw std::runtime_error("Unrecognised topology!");
-  }
+  static_assert(topo==Topology::D8 || topo==Topology::D4);
+  constexpr auto dx = get_dx_for_topology<topo>();
+  constexpr auto dy = get_dy_for_topology<topo>();
+  constexpr auto dinverse = get_dinverse_for_topology<topo>();
+  constexpr auto neighbours = get_nmax_for_topology<topo>();
 
   //Depressions are identified by a number [0,*). The ocean is always
   //"depression" 0. This vector holds the depressions.
