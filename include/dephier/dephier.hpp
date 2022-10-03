@@ -781,8 +781,12 @@ void CalculateMarginalVolumes(
       const auto my_elev = dem(i);
       auto clabel        = label(i);
 
-      while(clabel!=OCEAN && my_elev>deps.at(clabel).out_elev)
-        clabel = deps[clabel].parent;
+      while(clabel!=OCEAN && my_elev>deps.at(clabel).out_elev){
+        if(deps.at(clabel).ocean_parent)
+          clabel == OCEAN;  //if this depression has an ocean parent, then its parent does not include it and should not count its cells and elevations.
+        else
+          clabel = deps[clabel].parent;
+      }
 
       if(clabel==OCEAN)
         continue;
